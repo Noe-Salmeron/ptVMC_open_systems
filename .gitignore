@@ -1,0 +1,10 @@
+__pycache__/
+figures/
+old/
+profiles/
+results/
+jed_outputs/
+
+.venv/
+*.out
+*.log
