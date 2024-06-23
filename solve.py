@@ -12,7 +12,6 @@ from ptVMC_sampling import ptVMC, ptVMC_factored_2nd, ptVMC_implicit, ptVMC_fact
 
 def solve(lind, vstate, stop_time, dt, method, **kwargs):
     # solves the dynamics with the choosen method. The model is defined by lind and the initial state by vstate.
-    # TODO For now all the methods return the result under a different format, they should write their results in a file with the same format
 
     if method == "Exact":
         from exact_solver import exact_solver # imports are here to avoid having to install qutip if the exact solver is not used

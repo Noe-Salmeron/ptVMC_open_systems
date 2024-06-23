@@ -15,6 +15,7 @@ from ndm_ansatz import NDM, NDM_mod
 ###
 
 # Example of a script used to run the algorithm on the TFI model.
+# Writes the parameters of the ansatz at each timesteps in an output file
 
 ###
 
@@ -85,10 +86,6 @@ if TFI_exact:
 else:
     lind_jax = lind_to_pauli_strings(lind).to_jax_operator()
     lind_jax._setup() # needed to avoid a Jax tracer error
-
-# some dense operators to compute expectation values later
-# magnetization = sum([nk.operator.spin.sigmaz(hi,i) for i in range(L)])/L
-# sz = [jnp.array(nk.operator.spin.sigmaz(hi,i).to_dense()) for i in range(L)]
 
 # construct the ansatz
 if ansatz == "AR":

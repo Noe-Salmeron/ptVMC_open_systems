@@ -16,6 +16,7 @@ from ndm_ansatz import NDM
 ###
 
 # Example of a script to run the algorithm on the XYZ model.
+# Writes the parameters of the ansatz at each timesteps in an output file
 
 ###
 
@@ -84,10 +85,6 @@ lind = nk.operator.LocalLiouvillian(ha, j_ops)
 # transform the liouvillian into a jax operator allowing jit compilation of its methods
 lind_jax = lind_to_pauli_strings(lind).to_jax_operator()
 lind_jax._setup() # needed to avoid a Jax tracer error
-
-# some dense operators to compute expectation values later
-# magnetization = sum([nk.operator.spin.sigmaz(hi,i) for i in range(L)])/L
-# sz = [jnp.array(nk.operator.spin.sigmaz(hi,i).to_dense()) for i in range(L)]
 
 # construct the ansatz
 if ansatz == "AR":

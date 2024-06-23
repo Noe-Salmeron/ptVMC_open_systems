@@ -25,7 +25,6 @@ def to_dm(model,parameters,lind):
 
 
 
-# @partial(jax.jit, static_argnames=["model1","model2"])
 def overlap_exact(lind,model1,model2,parameters1,parameters2):
     # compute the distance between the state with parameters1 and the state with parameters2 evolved exactly by dt
     dm1 = to_dm(model1,parameters1,lind)
@@ -33,7 +32,6 @@ def overlap_exact(lind,model1,model2,parameters1,parameters2):
 
     dag = lambda x: jnp.conj(jnp.transpose(x))
     return jnp.real(-1*jnp.abs(jnp.trace(dag(dm1) @ dm2))**2 / (jnp.trace(dag(dm1)@dm1) * jnp.trace(dag(dm2)@dm2)))
-    # return -1 * jnp.abs( jnp.trace(dm1 @ dm2) / (jnp.trace(dm1) * jnp.trace(dm2)) )**2 
 
 
 

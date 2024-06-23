@@ -31,8 +31,6 @@ def get_overlap_jit(model_var,model_fix,params_var,params_fix,x,y,cv=0.5):
     F_loc = -1 * (left / leftb) * (right / rightb)
 
     return jnp.real(F_loc + cv*(jnp.abs(F_loc)**2 - 1))
-    # log_val = jnp.log(-1*F_loc)
-    # return jnp.real(F_loc + cv*(jnp.exp(2*jnp.real(log_val)) - 1))
 
 
 
@@ -55,6 +53,7 @@ def estimate_cstar(vstate_var,vstate_fix):
 
 @partial(jax.jit, static_argnums=[0,1,7])
 def estimate_overlap_and_grad_kernel(model_var,model_fix,params_var,params_fix,x,y,cv=0.5,mpi=False):
+    # jitted kernel of estimate_overlap_and_grad() below
     N = x.shape[-1]
     x = x.reshape(-1,N)
     y = y.reshape(-1,N)
@@ -109,6 +108,7 @@ def grad_distance(lind,vstate_var,vstate_fix,cv=0.5):
 
 
 def MP_inv(A):
+    # Moore-Penrose inverse for the QGT
     eps = 1e-10
     val,vec = jnp.linalg.eig(A)
     Ainv = jnp.zeros_like(A)
@@ -120,6 +120,7 @@ def MP_inv(A):
 
 
 def Nagy_inv(A,it):
+    # regularization in http://arxiv.org/pdf/1902.09483 for the QGT
     lam0 = 100
     b = 0.998
     lam_min = 1e-2
@@ -131,6 +132,7 @@ def Nagy_inv(A,it):
 
 from models import n_params
 def apply_preconditioner(lind, vstate, grad, it=0):
+    # apply a preconditioner (the inverse of the QGT) to the gradient, still experimental
     all_confs = lind.hilbert.all_states() # type:ignore
     model = vstate.model
     np = n_params(lind, model)
@@ -154,7 +156,7 @@ def apply_preconditioner(lind, vstate, grad, it=0):
 
 
 def printmpi(str, mpi):
-    # prints str on only one cpu
+    # prints str on only one cpu, to avoid printing 10s of times the same message
     if mpi is True:
         from mpi4py import MPI # type:ignore
 
@@ -206,7 +208,6 @@ def optimize(vstate_var,vstate_fix,iters,start_learning_rate,cv=0.5,acc=-1.,comp
     params_track = collections.deque(maxlen=50)
 
     for j in range(iters):
-        # print(vstate_var.sampler_state.σ)
         stats, grads = estimate_overlap_and_grad(vstate_var,vstate_fix,cv,mpi=mpi)
         overlap_track.append(stats[0])
         params_track.append(deepcopy(vstate_var.parameters))

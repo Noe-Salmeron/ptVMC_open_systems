@@ -17,7 +17,7 @@ default_kernel_init = custom_initializer
 
 ###
 
-# The NDM ansatz from netket, modified to allow being multiplied by a quantum channel.
+# The NDM ansatz from netket, modified to allow being modified by a quantum channel.
 
 ###
 
@@ -240,14 +240,7 @@ class NDM(nn.Module):
 
 
 class NDM_mod(nn.Module):
-    """
-    Encodes a Positive-Definite Neural Density Matrix using the ansatz from Torlai and
-    Melko, PRL 120, 240503 (2018).
-
-    Assumes real dtype.
-    A discussion on the effect of the feature density for the pure and mixed part is
-    given in Vicentini et Al, PRL 122, 250503 (2019).
-    """
+    # modified NDM so that it is possible to apply exactly the diagonal part of the TFI Liouvilian for an open chain of spins
 
     param_dtype: Any = np.float64
     """The dtype of the weights."""

@@ -17,7 +17,7 @@ from typing import Union, Any
 
 ###
 
-# Contains multiple utility methods for manipulating ansatzes, some ansatzes, and some implementations of quantum channels.
+# Contains some ansatzes, multiple utility methods for manipulating these ansatzes, and some implementations of quantum channels.
 
 ###
 
@@ -60,7 +60,7 @@ def n_params(lind,model):
 
 @jax.jit
 def conf_to_index(conf):
-    # takes a configuration and return its index, works for simple and double hilbert spaces
+    # takes a configuration and return its index, works for simple and doubled hilbert spaces
     l = jnp.size(conf, axis=-1)
     bits = (conf + 1) / 2
     powers = 2**jnp.arange(l-1,-1,-1)
@@ -77,7 +77,6 @@ def tensor_identity(pauli_strings_operator, dim, side):
     else:
         raise ValueError("side should be right or left")
     
-    # return nk.operator.PauliStrings(nk.hilbert.Spin(s=1/2, N=dim*2), ops, pauli_strings_operator.weights) # type: ignore
     return nk.operator.PauliStrings(nk.hilbert.DoubledHilbert(nk.hilbert.Spin(s=1/2, N=dim)), ops, pauli_strings_operator.weights) # type: ignore
 
 
@@ -162,7 +161,7 @@ default_kernel_init = normal(stddev=0.001)
 default_bias_init = normal(stddev=0.001)
 p_initializer: Any = normal(stddev=0.01)
 class AR_combination(nn.Module):
-    # density matrix representer as a sum of weighted auto regresive wavefunctions
+    # density matrix represented as a sum of weighted auto regresive wavefunctions
     rank: int = 1
     hilbert: Any = nk.hilbert.Spin(s=1/2, N=2) # dummy initialization
     layers: int = 2
@@ -316,6 +315,7 @@ class Nagy_ansatz(nn.Module):
 # default_param_init = custom_initializer
 default_param_init = default_kernel_init
 class CC_RBM(nn.Module):
+    # convex combination of RBM wavefunctions
     rank: int = 1
     alpha: float = 1.0
     param_dtype: Any = jnp.complex128
@@ -348,9 +348,7 @@ class CC_RBM(nn.Module):
 
 
 class RBM_dm(nn.Module):
-    r"""A restricted boltzman Machine, equivalent to a 2-layer FFNN with a
-    nonlinear activation function in between.
-    """
+    # an RBM representing a density matrix
 
     param_dtype: Any = np.float64
     """The dtype of the weights."""
@@ -371,13 +369,6 @@ class RBM_dm(nn.Module):
     """Initializer for the hidden bias."""
     visible_bias_init: NNInitFunc = default_kernel_init
     """Initializer for the visible bias."""
-
-    # kernel_init: NNInitFunc = custom_initializer
-    # """Initializer for the Dense layer matrix."""
-    # hidden_bias_init: NNInitFunc = custom_initializer
-    # """Initializer for the hidden bias."""
-    # visible_bias_init: NNInitFunc = custom_initializer
-    # """Initializer for the visible bias."""
 
     channel: Any = None
 
@@ -420,8 +411,7 @@ class RBM_dm(nn.Module):
 
 
 class Full_dm(nn.Module):
-    r"""The full vectorized density matrix
-    """
+    # the full vectorized density matrix
 
     param_dtype: Any = np.complex128
     """The dtype of the weights."""
@@ -455,8 +445,8 @@ class Full_dm(nn.Module):
             return x
 
 
-class small_evol(): # could be a subclass of nk.operator._abstract_super_operator.AbstractSuperOperator, but deepcopy doesn't work
-    # class encoding the operator I + dt*L corresponding to a small evolution in time
+class small_evol(): # could be a subclass of nk.operator._abstract_super_operator.AbstractSuperOperator
+    # class encoding the Taylor expansion, corresponding to a small evolution in time
 
     def __init__(self, lind, dt=0.01, order=1, id_fact=1.+0j, l_fact=1.+0j):
         self.lind = lind
@@ -508,7 +498,7 @@ class small_evol(): # could be a subclass of nk.operator._abstract_super_operato
 
 
 class exact_evol(): # could be a subclass of nk.operator._abstract_super_operator.AbstractSuperOperator, but deepcopy doesn't work
-    # class encoding the operator exp(dt*L) corresponding to an evolution in time
+    # class encoding the operator exp(dt*L) corresponding to the exact evolution in time
 
     def __init__(self,lind,dt=0.01):
         self.lind = lind
